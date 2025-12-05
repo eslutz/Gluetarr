@@ -81,7 +81,15 @@ All configuration is done via environment variables. An example configuration fi
 |----------|---------|----------|
 | `GET /health` | Liveness probe | `200 OK` if running |
 | `GET /ready` | Readiness probe | `200 OK` if qBittorrent is reachable |
+| `GET /status` | Full diagnostics | JSON status object |
 | `GET /metrics` | Prometheus metrics | Metrics in OpenMetrics format |
+
+### Endpoint Usage
+
+- **/health**: Configure this as a **Liveness Probe**. It indicates if the Gluetarr process is running. If this fails, the container should be restarted.
+- **/ready**: Configure this as a **Readiness Probe**. It indicates if Gluetarr can successfully communicate with qBittorrent. If this fails, the container should remain running but not receive traffic/work until the dependency recovers.
+- **/status**: Use this for manual debugging or external monitoring dashboards. It provides a JSON snapshot of the application's internal state, including version and connectivity status.
+- **/metrics**: Configure your Prometheus scraper to target this endpoint to collect application performance data.
 
 ## Prometheus Metrics
 

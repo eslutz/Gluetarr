@@ -30,6 +30,7 @@ func (s *Server) Start() error {
 
 	mux.HandleFunc("/health", s.healthHandler)
 	mux.HandleFunc("/ready", s.readyHandler)
+	mux.HandleFunc("/status", s.statusHandler)
 	mux.Handle("/metrics", promhttp.Handler())
 
 	addr := ":" + s.port
