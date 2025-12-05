@@ -1,22 +1,22 @@
 # Gluetarr
 
-[![CI](https://github.com/eslutz/gluetarr/actions/workflows/ci.yml/badge.svg)](https://github.com/eslutz/gluetarr/actions/workflows/ci.yml)
-[![Security](https://github.com/eslutz/gluetarr/actions/workflows/security.yml/badge.svg)](https://github.com/eslutz/gluetarr/actions/workflows/security.yml)
+[![Workflow Status](https://github.com/eslutz/gluetarr/actions/workflows/release.yml/badge.svg)](https://github.com/eslutz/gluetarr/actions/workflows/release.yml)
+[![Security Check](https://github.com/eslutz/gluetarr/actions/workflows/security.yml/badge.svg)](https://github.com/eslutz/gluetarr/actions/workflows/security.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/eslutz/gluetarr)](https://goreportcard.com/report/github.com/eslutz/gluetarr)
 [![License](https://img.shields.io/github/license/eslutz/gluetarr)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/eslutz/gluetarr)](https://github.com/eslutz/gluetarr/releases/latest)
+[![Release](https://img.shields.io/github/v/release/eslutz/gluetarr?color=007ec6)](https://github.com/eslutz/gluetarr/releases/latest)
 
 A lightweight, production-ready Go application that automatically synchronizes port forwarding changes from Gluetun VPN to qBittorrent. Built with observability and reliability in mind.
 
 ## Features
 
-- 🔄 **Automatic Port Synchronization**: Monitors Gluetun's forwarded port file and updates qBittorrent instantly
-- 📊 **Full Observability**: Prometheus metrics for monitoring and alerting
-- 🏥 **Health & Readiness**: Kubernetes-compatible health check endpoints
-- ⚡ **Efficient File Watching**: Uses fsnotify for real-time file system events
-- 🔒 **Secure by Default**: Runs as non-root user in Docker, minimal attack surface
-- 🪶 **Lightweight**: ~15MB Docker image, minimal resource footprint
-- 🛡️ **Production Ready**: Automatic re-authentication, graceful error handling, fallback polling
+- **Automatic Port Synchronization**: Monitors Gluetun's forwarded port file and updates qBittorrent instantly
+- **Full Observability**: Prometheus metrics for monitoring and alerting
+- **Health & Readiness**: Kubernetes-compatible health check endpoints
+- **Efficient File Watching**: Uses fsnotify for real-time file system events
+- **Secure by Default**: Runs as non-root user in Docker, minimal attack surface
+- **Lightweight**: ~15MB Docker image, minimal resource footprint
+- **Production Ready**: Automatic re-authentication, graceful error handling, fallback polling
 
 ## Quick Start
 
