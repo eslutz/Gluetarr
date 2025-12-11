@@ -1,10 +1,10 @@
-# Gluetarr
+# Forwardarr
 
-[![Workflow Status](https://github.com/eslutz/gluetarr/actions/workflows/release.yml/badge.svg)](https://github.com/eslutz/gluetarr/actions/workflows/release.yml)
-[![Security Check](https://github.com/eslutz/gluetarr/actions/workflows/security.yml/badge.svg)](https://github.com/eslutz/gluetarr/actions/workflows/security.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/eslutz/gluetarr)](https://goreportcard.com/report/github.com/eslutz/gluetarr)
-[![License](https://img.shields.io/github/license/eslutz/gluetarr)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/eslutz/gluetarr?color=007ec6)](https://github.com/eslutz/gluetarr/releases/latest)
+[![Workflow Status](https://github.com/eslutz/forwardarr/actions/workflows/release.yml/badge.svg)](https://github.com/eslutz/forwardarr/actions/workflows/release.yml)
+[![Security Check](https://github.com/eslutz/forwardarr/actions/workflows/security.yml/badge.svg)](https://github.com/eslutz/forwardarr/actions/workflows/security.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/eslutz/forwardarr)](https://goreportcard.com/report/github.com/eslutz/forwardarr)
+[![License](https://img.shields.io/github/license/eslutz/forwardarr)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/eslutz/forwardarr?color=007ec6)](https://github.com/eslutz/forwardarr/releases/latest)
 
 A lightweight, production-ready Go application that automatically synchronizes port forwarding changes from Gluetun VPN to qBittorrent. Built with observability and reliability in mind.
 
@@ -28,14 +28,14 @@ An example `docker-compose.yml` file is available at [docker-compose.example.yml
 
 ```bash
 docker run -d \
-  --name gluetarr \
+  --name forwardarr \
   -e GLUETUN_PORT_FILE=/tmp/gluetun/forwarded_port \
   -e QBIT_ADDR=http://qbittorrent:8080 \
   -e QBIT_USER=admin \
   -e QBIT_PASS=adminadmin \
   -v gluetun-data:/tmp/gluetun:ro \
   -p 9090:9090 \
-  ghcr.io/eslutz/gluetarr:latest
+  ghcr.io/eslutz/forwardarr:latest
 ```
 
 ## Configuration
@@ -57,7 +57,7 @@ All configuration is done via environment variables. An example configuration fi
 ```txt
 ┌─────────┐         ┌──────────┐         ┌────────────┐
 │ Gluetun │ writes  │  Port    │ watched │            │
-│   VPN   ├────────►│   File   ├────────►│  Gluetarr  │
+│   VPN   ├────────►│   File   ├────────►│ Forwardarr │
 └─────────┘         └──────────┘         └─────┬──────┘
                                                 │
                                                 │ updates
@@ -71,8 +71,8 @@ All configuration is done via environment variables. An example configuration fi
 
 1. Gluetun establishes a VPN connection with port forwarding
 2. Gluetun writes the forwarded port to a file
-3. Gluetarr watches this file for changes using fsnotify
-4. When the port changes, Gluetarr updates qBittorrent's listening port via API
+3. Forwardarr watches this file for changes using fsnotify
+4. When the port changes, Forwardarr updates qBittorrent's listening port via API
 5. A fallback ticker ensures sync even if file events are missed
 
 ## HTTP Endpoints
@@ -86,8 +86,8 @@ All configuration is done via environment variables. An example configuration fi
 
 ### Endpoint Usage
 
-- **/health**: Configure this as a **Liveness Probe**. It indicates if the Gluetarr process is running. If this fails, the container should be restarted.
-- **/ready**: Configure this as a **Readiness Probe**. It indicates if Gluetarr can successfully communicate with qBittorrent. If this fails, the container should remain running but not receive traffic/work until the dependency recovers.
+- **/health**: Configure this as a **Liveness Probe**. It indicates if the Forwardarr process is running. If this fails, the container should be restarted.
+- **/ready**: Configure this as a **Readiness Probe**. It indicates if Forwardarr can successfully communicate with qBittorrent. If this fails, the container should remain running but not receive traffic/work until the dependency recovers.
 - **/status**: Use this for manual debugging or external monitoring dashboards. It provides a JSON snapshot of the application's internal state, including version and connectivity status.
 - **/metrics**: Configure your Prometheus scraper to target this endpoint to collect application performance data.
 
@@ -95,23 +95,23 @@ All configuration is done via environment variables. An example configuration fi
 
 | Metric | Type | Description |
 |--------|------|-------------|
-| `gluetarr_info` | Gauge | Build information (version, commit, date) |
-| `gluetarr_current_port` | Gauge | Current forwarded port from Gluetun |
-| `gluetarr_sync_total` | Counter | Total number of successful port syncs |
-| `gluetarr_sync_errors` | Counter | Total number of failed sync attempts |
-| `gluetarr_last_sync_timestamp` | Gauge | Unix timestamp of last successful sync |
+| `forwardarr_info` | Gauge | Build information (version, commit, date) |
+| `forwardarr_current_port` | Gauge | Current forwarded port from Gluetun |
+| `forwardarr_sync_total` | Counter | Total number of successful port syncs |
+| `forwardarr_sync_errors` | Counter | Total number of failed sync attempts |
+| `forwardarr_last_sync_timestamp` | Gauge | Unix timestamp of last successful sync |
 
 ### Example Prometheus Queries
 
 ```promql
 # Current forwarded port
-gluetarr_current_port
+forwardarr_current_port
 
 # Sync success rate (last 5m)
-rate(gluetarr_sync_total[5m]) / (rate(gluetarr_sync_total[5m]) + rate(gluetarr_sync_errors[5m]))
+rate(forwardarr_sync_total[5m]) / (rate(forwardarr_sync_total[5m]) + rate(forwardarr_sync_errors[5m]))
 
 # Time since last successful sync
-time() - gluetarr_last_sync_timestamp
+time() - forwardarr_last_sync_timestamp
 ```
 
 ## Grafana Dashboard
@@ -128,14 +128,14 @@ A pre-built Grafana dashboard is available at [docs/dashboard.json](docs/dashboa
 
 ```bash
 # Clone the repository
-git clone https://github.com/eslutz/gluetarr.git
-cd gluetarr
+git clone https://github.com/eslutz/forwardarr.git
+cd forwardarr
 
 # Build binary
-go build -o gluetarr ./cmd/gluetarr
+go build -o forwardarr ./cmd/forwardarr
 
 # Build Docker image
-docker build -t gluetarr .
+docker build -t forwardarr .
 ```
 
 ## Development
@@ -155,23 +155,23 @@ export GLUETUN_PORT_FILE=/path/to/port/file
 export QBIT_ADDR=http://localhost:8080
 export QBIT_USER=admin
 export QBIT_PASS=adminadmin
-go run ./cmd/gluetarr
+go run ./cmd/forwardarr
 ```
 
 ## Troubleshooting
 
-### Gluetarr can't connect to qBittorrent
+### Forwardarr can't connect to qBittorrent
 
 - Verify qBittorrent is accessible at the configured address
 - Check credentials are correct
 - Ensure network connectivity between containers
-- Check logs: `docker logs gluetarr`
+- Check logs: `docker logs forwardarr`
 
 ### Port not updating
 
 - Verify Gluetun is writing to the port file: `cat /tmp/gluetun/forwarded_port`
-- Check the port file path is correct in Gluetarr config
-- Ensure the volume mount is working: `docker exec gluetarr cat /tmp/gluetun/forwarded_port`
+- Check the port file path is correct in Forwardarr config
+- Ensure the volume mount is working: `docker exec forwardarr cat /tmp/gluetun/forwarded_port`
 - Increase log level to debug: `LOG_LEVEL=debug`
 
 ### High resource usage

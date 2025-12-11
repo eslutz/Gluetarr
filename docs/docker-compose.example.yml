@@ -1,4 +1,4 @@
-# Example Docker Compose configuration for Gluetarr
+# Example Docker Compose configuration for Forwardarr
 # Copy this file to docker-compose.yml and customize as needed
 
 services:
@@ -30,9 +30,9 @@ services:
       - ./qbittorrent:/config
       - ./downloads:/downloads
 
-  gluetarr:
-    image: ghcr.io/eslutz/gluetarr:latest
-    container_name: gluetarr
+  forwardarr:
+    image: ghcr.io/eslutz/forwardarr:latest
+    container_name: forwardarr
     depends_on:
       - gluetun
       - qbittorrent

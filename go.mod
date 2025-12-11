@@ -1,4 +1,4 @@
-module github.com/eslutz/gluetarr
+module github.com/eslutz/forwardarr
 
 go 1.25
 

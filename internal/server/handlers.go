@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/eslutz/gluetarr/pkg/version"
+	"github.com/eslutz/forwardarr/pkg/version"
 )
 
 func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {

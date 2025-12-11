@@ -9,22 +9,22 @@ import (
 
 var (
 	currentPort = promauto.NewGauge(prometheus.GaugeOpts{
-		Name: "gluetarr_current_port",
+		Name: "forwardarr_current_port",
 		Help: "The current forwarded port from Gluetun",
 	})
 
 	syncTotal = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gluetarr_sync_total",
+		Name: "forwardarr_sync_total",
 		Help: "Total number of successful port sync operations",
 	})
 
 	syncErrors = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gluetarr_sync_errors",
+		Name: "forwardarr_sync_errors",
 		Help: "Total number of failed port sync operations",
 	})
 
 	lastSyncTimestamp = promauto.NewGauge(prometheus.GaugeOpts{
-		Name: "gluetarr_last_sync_timestamp",
+		Name: "forwardarr_last_sync_timestamp",
 		Help: "Unix timestamp of the last successful sync",
 	})
 )

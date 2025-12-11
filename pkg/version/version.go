@@ -15,8 +15,8 @@ var (
 
 	info = promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "gluetarr_info",
-			Help: "Information about the Gluetarr build",
+			Name: "forwardarr_info",
+			Help: "Information about the Forwardarr build",
 		},
 		[]string{"version", "commit", "date", "go_version"},
 	)
@@ -27,5 +27,5 @@ func init() {
 }
 
 func String() string {
-	return fmt.Sprintf("Gluetarr %s (commit: %s, built: %s)", Version, Commit, Date)
+	return fmt.Sprintf("Forwardarr %s (commit: %s, built: %s)", Version, Commit, Date)
 }

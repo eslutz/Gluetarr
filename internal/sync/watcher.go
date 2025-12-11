@@ -11,7 +11,7 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 
-	"github.com/eslutz/gluetarr/internal/qbit"
+	"github.com/eslutz/forwardarr/internal/qbit"
 )
 
 type Watcher struct {
