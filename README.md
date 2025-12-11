@@ -30,7 +30,7 @@ An example `docker-compose.yml` file is available at [docker-compose.example.yml
 docker run -d \
   --name forwardarr \
   -e GLUETUN_PORT_FILE=/tmp/gluetun/forwarded_port \
-  -e QBIT_ADDR=http://qbittorrent:8080 \
+  -e TORRENT_CLIENT_URL=http://qbittorrent:8080 \
   -e TORRENT_CLIENT_USER=admin \
   -e TORRENT_CLIENT_PASSWORD=adminadmin \
   -v gluetun-data:/tmp/gluetun:ro \
@@ -45,7 +45,7 @@ All configuration is done via environment variables. An example configuration fi
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `GLUETUN_PORT_FILE` | `/tmp/gluetun/forwarded_port` | Path to Gluetun's port file |
-| `QBIT_ADDR` | `http://localhost:8080` | qBittorrent WebUI address |
+| `TORRENT_CLIENT_URL` | `http://localhost:8080` | Torrent client WebUI address |
 | `TORRENT_CLIENT_USER` | `admin` | Torrent client username |
 | `TORRENT_CLIENT_PASSWORD` | `adminadmin` | Torrent client password |
 | `SYNC_INTERVAL` | `60` | Fallback polling interval (seconds) |

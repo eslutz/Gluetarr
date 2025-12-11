@@ -29,7 +29,7 @@ func TestLoad(t *testing.T) {
 			name: "custom values",
 			envVars: map[string]string{
 				"GLUETUN_PORT_FILE":       "/custom/path/port",
-				"QBIT_ADDR":               "http://custom:9090",
+				"TORRENT_CLIENT_URL":      "http://custom:9090",
 				"TORRENT_CLIENT_USER":     "testuser",
 				"TORRENT_CLIENT_PASSWORD": "testpass",
 				"SYNC_INTERVAL":           "120",

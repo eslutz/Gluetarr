@@ -19,7 +19,7 @@ type Config struct {
 func Load() *Config {
 	return &Config{
 		GluetunPortFile: getEnv("GLUETUN_PORT_FILE", "/tmp/gluetun/forwarded_port"),
-		QbitAddr:        getEnv("QBIT_ADDR", "http://localhost:8080"),
+		QbitAddr:        getEnv("TORRENT_CLIENT_URL", "http://localhost:8080"),
 		QbitUser:        getEnv("TORRENT_CLIENT_USER", "admin"),
 		QbitPass:        getEnv("TORRENT_CLIENT_PASSWORD", "adminadmin"),
 		SyncInterval:    getDurationEnv("SYNC_INTERVAL", 60*time.Second),
