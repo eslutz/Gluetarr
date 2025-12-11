@@ -1,8 +1,8 @@
-# Gluetarr Context for GitHub Copilot
+# Forwardarr Context for GitHub Copilot
 
 ## Project Overview
 
-Gluetarr is a lightweight Go application that automatically synchronizes port forwarding changes from Gluetun VPN to qBittorrent. It monitors a port file written by Gluetun and updates qBittorrent's listening port accordingly.
+Forwardarr is a lightweight Go application that automatically synchronizes port forwarding changes from Gluetun VPN to qBittorrent. It monitors a port file written by Gluetun and updates qBittorrent's listening port accordingly.
 
 ## Architecture
 
@@ -15,7 +15,7 @@ Gluetarr is a lightweight Go application that automatically synchronizes port fo
 ## Project Structure
 
 ```
-cmd/gluetarr/     - Application entrypoint
+cmd/forwardarr/   - Application entrypoint
 internal/config/  - Configuration management
 internal/qbit/    - qBittorrent API client
 internal/sync/    - File watching and sync logic
@@ -49,11 +49,11 @@ Loads configuration from environment variables with sensible defaults.
 
 ## Metrics
 
-- `gluetarr_info` - Build information
-- `gluetarr_current_port` - Current forwarded port
-- `gluetarr_sync_total` - Successful syncs counter
-- `gluetarr_sync_errors` - Failed syncs counter
-- `gluetarr_last_sync_timestamp` - Last successful sync time
+- `forwardarr_info` - Build information
+- `forwardarr_current_port` - Current forwarded port
+- `forwardarr_sync_total` - Successful syncs counter
+- `forwardarr_sync_errors` - Failed syncs counter
+- `forwardarr_last_sync_timestamp` - Last successful sync time
 
 ## Coding Style
 

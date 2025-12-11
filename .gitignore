@@ -24,6 +24,11 @@
 # Go workspace file
 go.work
 
+# Binary outputs
+forwardarr
+gluetarr
+coverage.out
+
 ### macOS ###
 # General
 .DS_Store
