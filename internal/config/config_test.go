@@ -28,13 +28,13 @@ func TestLoad(t *testing.T) {
 		{
 			name: "custom values",
 			envVars: map[string]string{
-				"GLUETUN_PORT_FILE": "/custom/path/port",
-				"QBIT_ADDR":         "http://custom:9090",
-				"QBIT_USER":         "testuser",
-				"QBIT_PASS":         "testpass",
-				"SYNC_INTERVAL":     "120",
-				"METRICS_PORT":      "8080",
-				"LOG_LEVEL":         "debug",
+				"GLUETUN_PORT_FILE":       "/custom/path/port",
+				"QBIT_ADDR":               "http://custom:9090",
+				"TORRENT_CLIENT_USER":     "testuser",
+				"TORRENT_CLIENT_PASSWORD": "testpass",
+				"SYNC_INTERVAL":           "120",
+				"METRICS_PORT":            "8080",
+				"LOG_LEVEL":               "debug",
 			},
 			expected: &Config{
 				GluetunPortFile: "/custom/path/port",
@@ -49,8 +49,8 @@ func TestLoad(t *testing.T) {
 		{
 			name: "partial custom values",
 			envVars: map[string]string{
-				"QBIT_USER": "myuser",
-				"LOG_LEVEL": "warn",
+				"TORRENT_CLIENT_USER": "myuser",
+				"LOG_LEVEL":           "warn",
 			},
 			expected: &Config{
 				GluetunPortFile: "/tmp/gluetun/forwarded_port",

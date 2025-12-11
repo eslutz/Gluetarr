@@ -31,8 +31,8 @@ docker run -d \
   --name forwardarr \
   -e GLUETUN_PORT_FILE=/tmp/gluetun/forwarded_port \
   -e QBIT_ADDR=http://qbittorrent:8080 \
-  -e QBIT_USER=admin \
-  -e QBIT_PASS=adminadmin \
+  -e TORRENT_CLIENT_USER=admin \
+  -e TORRENT_CLIENT_PASSWORD=adminadmin \
   -v gluetun-data:/tmp/gluetun:ro \
   -p 9090:9090 \
   ghcr.io/eslutz/forwardarr:latest
@@ -46,8 +46,8 @@ All configuration is done via environment variables. An example configuration fi
 |----------|---------|-------------|
 | `GLUETUN_PORT_FILE` | `/tmp/gluetun/forwarded_port` | Path to Gluetun's port file |
 | `QBIT_ADDR` | `http://localhost:8080` | qBittorrent WebUI address |
-| `QBIT_USER` | `admin` | qBittorrent username |
-| `QBIT_PASS` | `adminadmin` | qBittorrent password |
+| `TORRENT_CLIENT_USER` | `admin` | Torrent client username |
+| `TORRENT_CLIENT_PASSWORD` | `adminadmin` | Torrent client password |
 | `SYNC_INTERVAL` | `60` | Fallback polling interval (seconds) |
 | `METRICS_PORT` | `9090` | HTTP server port for metrics/health |
 | `LOG_LEVEL` | `info` | Logging level (debug, info, warn, error) |

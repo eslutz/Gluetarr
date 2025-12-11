@@ -39,8 +39,8 @@ services:
     environment:
       - GLUETUN_PORT_FILE=/tmp/gluetun/forwarded_port
       - QBIT_ADDR=http://gluetun:8080
-      - QBIT_USER=admin
-      - QBIT_PASS=adminadmin
+      - TORRENT_CLIENT_USER=admin
+      - TORRENT_CLIENT_PASSWORD=adminadmin
       - SYNC_INTERVAL=60
       - LOG_LEVEL=info
     volumes:
