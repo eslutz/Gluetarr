@@ -36,7 +36,8 @@ permissions:
 jobs:
   # ----------------------------------------------------------------------------
   # Trivy - Container image vulnerability scanning
-  # Covers base image and installed OS packages
+  # Scans the image built from this repository's Dockerfile
+  # (includes base image + installed OS packages + app dependencies)
   # ----------------------------------------------------------------------------
   trivy-image:
     name: Trivy Image Scan
@@ -49,8 +50,17 @@ jobs:
         id: image
         run: echo "name=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
-      - name: Build Docker Image
-        run: docker build -t ${{ steps.image.outputs.name }}:scan .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image (local)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: ${{ steps.image.outputs.name }}:scan
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
