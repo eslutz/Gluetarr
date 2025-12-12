@@ -37,7 +37,7 @@ func NewWatcher(portFile string, qbitClient *qbit.Client, syncInterval time.Dura
 
 	dir := filepath.Dir(portFile)
 	if err := watcher.Add(dir); err != nil {
-		watcher.Close()
+		_ = watcher.Close()
 		return nil, fmt.Errorf("failed to watch directory %s: %w", dir, err)
 	}
 
@@ -48,7 +48,11 @@ func NewWatcher(portFile string, qbitClient *qbit.Client, syncInterval time.Dura
 func (w *Watcher) Start() error {
 	ticker := time.NewTicker(w.syncInterval)
 	defer ticker.Stop()
-	defer w.watcher.Close()
+	defer func() {
+		if err := w.watcher.Close(); err != nil {
+			slog.Warn("failed to close watcher", "error", err)
+		}
+	}()
 
 	if err := w.syncPort(); err != nil {
 		slog.Warn("initial sync failed", "error", err)

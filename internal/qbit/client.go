@@ -54,7 +54,11 @@ func (c *Client) Login() error {
 	if err != nil {
 		return fmt.Errorf("login request failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			slog.Warn("failed to close response body", "error", err)
+		}
+	}()
 
 	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK || string(body) != "Ok." {
@@ -70,7 +74,11 @@ func (c *Client) GetPort() (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("failed to get preferences: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			slog.Warn("failed to close response body", "error", err)
+		}
+	}()
 
 	if resp.StatusCode == http.StatusForbidden {
 		slog.Warn("received 403, re-authenticating...")
@@ -112,7 +120,11 @@ func (c *Client) SetPort(port int) error {
 	if err != nil {
 		return fmt.Errorf("failed to set preferences: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			slog.Warn("failed to close response body", "error", err)
+		}
+	}()
 
 	if resp.StatusCode == http.StatusForbidden {
 		slog.Warn("received 403, re-authenticating...")
@@ -136,7 +148,11 @@ func (c *Client) Ping() error {
 	if err != nil {
 		return fmt.Errorf("ping failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			slog.Warn("failed to close response body", "error", err)
+		}
+	}()
 
 	if resp.StatusCode == http.StatusForbidden {
 		return c.Login()

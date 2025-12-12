@@ -86,7 +86,9 @@ func TestLoad(t *testing.T) {
 
 			// Set test environment variables
 			for k, v := range tt.envVars {
-				os.Setenv(k, v)
+				if err := os.Setenv(k, v); err != nil {
+					t.Fatalf("failed to set env var %s: %v", k, err)
+				}
 			}
 
 			cfg := Load()
@@ -144,7 +146,9 @@ func TestGetEnv(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			os.Clearenv()
 			if tt.envValue != "" {
-				os.Setenv(tt.key, tt.envValue)
+				if err := os.Setenv(tt.key, tt.envValue); err != nil {
+					t.Fatalf("failed to set env var: %v", err)
+				}
 			}
 
 			result := getEnv(tt.key, tt.defaultValue)
@@ -190,7 +194,9 @@ func TestGetDurationEnv(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			os.Clearenv()
 			if tt.envValue != "" {
-				os.Setenv(tt.key, tt.envValue)
+				if err := os.Setenv(tt.key, tt.envValue); err != nil {
+					t.Fatalf("failed to set env var: %v", err)
+				}
 			}
 
 			result := getDurationEnv(tt.key, tt.defaultValue)

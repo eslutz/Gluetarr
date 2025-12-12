@@ -47,12 +47,12 @@ func TestReadyHandler_Success(t *testing.T) {
 	qbitServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/api/v2/auth/login" {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("Ok."))
+			_, _ = w.Write([]byte("Ok."))
 			return
 		}
 		if r.URL.Path == "/api/v2/app/version" {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("v4.5.0"))
+			_, _ = w.Write([]byte("v4.5.0"))
 			return
 		}
 	}))
@@ -81,7 +81,7 @@ func TestReadyHandler_Failure(t *testing.T) {
 	qbitServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/api/v2/auth/login" {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("Ok."))
+			_, _ = w.Write([]byte("Ok."))
 			return
 		}
 		w.WriteHeader(http.StatusInternalServerError)
@@ -107,12 +107,12 @@ func TestStatusHandler_Running(t *testing.T) {
 	qbitServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/api/v2/auth/login" {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("Ok."))
+			_, _ = w.Write([]byte("Ok."))
 			return
 		}
 		if r.URL.Path == "/api/v2/app/version" {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("v4.5.0"))
+			_, _ = w.Write([]byte("v4.5.0"))
 			return
 		}
 	}))
@@ -156,7 +156,7 @@ func TestStatusHandler_Stopping(t *testing.T) {
 	qbitServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/api/v2/auth/login" {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("Ok."))
+			_, _ = w.Write([]byte("Ok."))
 			return
 		}
 	}))
@@ -197,7 +197,7 @@ func TestNewServer(t *testing.T) {
 	qbitServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/api/v2/auth/login" {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("Ok."))
+			_, _ = w.Write([]byte("Ok."))
 			return
 		}
 	}))
