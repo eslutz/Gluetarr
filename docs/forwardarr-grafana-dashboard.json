@@ -1,7 +1,7 @@
 {
   "dashboard": {
-    "title": "Gluetarr - Port Sync Monitor",
-    "tags": ["gluetarr", "qbittorrent", "vpn"],
+    "title": "Forwardarr - Port Sync Monitor",
+    "tags": ["forwardarr", "qbittorrent", "vpn"],
     "timezone": "browser",
     "refresh": "30s",
     "time": {
@@ -15,7 +15,7 @@
         "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
         "targets": [
           {
-            "expr": "gluetarr_info",
+            "expr": "forwardarr_info",
             "legendFormat": "v{{version}} ({{commit}})",
             "refId": "A"
           }
@@ -31,7 +31,7 @@
         "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
         "targets": [
           {
-            "expr": "gluetarr_current_port",
+            "expr": "forwardarr_current_port",
             "refId": "A"
           }
         ],
@@ -52,7 +52,7 @@
         "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
         "targets": [
           {
-            "expr": "rate(gluetarr_sync_total[5m]) / (rate(gluetarr_sync_total[5m]) + rate(gluetarr_sync_errors[5m]))",
+            "expr": "rate(forwardarr_sync_total[5m]) / (rate(forwardarr_sync_total[5m]) + rate(forwardarr_sync_errors[5m]))",
             "refId": "A"
           }
         ],
@@ -82,7 +82,7 @@
         "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
         "targets": [
           {
-            "expr": "time() - gluetarr_last_sync_timestamp",
+            "expr": "time() - forwardarr_last_sync_timestamp",
             "refId": "A"
           }
         ],
@@ -110,7 +110,7 @@
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
         "targets": [
           {
-            "expr": "gluetarr_current_port",
+            "expr": "forwardarr_current_port",
             "legendFormat": "Forwarded Port",
             "refId": "A"
           }
@@ -135,12 +135,12 @@
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
         "targets": [
           {
-            "expr": "rate(gluetarr_sync_total[1m])",
+            "expr": "rate(forwardarr_sync_total[1m])",
             "legendFormat": "Successful Syncs/min",
             "refId": "A"
           },
           {
-            "expr": "rate(gluetarr_sync_errors[1m])",
+            "expr": "rate(forwardarr_sync_errors[1m])",
             "legendFormat": "Failed Syncs/min",
             "refId": "B"
           }
@@ -170,7 +170,7 @@
         "gridPos": {"h": 4, "w": 6, "x": 0, "y": 12},
         "targets": [
           {
-            "expr": "gluetarr_sync_total",
+            "expr": "forwardarr_sync_total",
             "refId": "A"
           }
         ],
@@ -192,7 +192,7 @@
         "gridPos": {"h": 4, "w": 6, "x": 6, "y": 12},
         "targets": [
           {
-            "expr": "gluetarr_sync_errors",
+            "expr": "forwardarr_sync_errors",
             "refId": "A"
           }
         ],
@@ -222,12 +222,12 @@
         "gridPos": {"h": 4, "w": 12, "x": 12, "y": 12},
         "targets": [
           {
-            "expr": "go_memstats_alloc_bytes{job=~\".*gluetarr.*\"}",
+            "expr": "go_memstats_alloc_bytes{job=~\".*forwardarr.*\"}",
             "legendFormat": "Allocated",
             "refId": "A"
           },
           {
-            "expr": "go_memstats_sys_bytes{job=~\".*gluetarr.*\"}",
+            "expr": "go_memstats_sys_bytes{job=~\".*forwardarr.*\"}",
             "legendFormat": "System",
             "refId": "B"
           }
@@ -249,7 +249,7 @@
         "gridPos": {"h": 4, "w": 12, "x": 0, "y": 16},
         "targets": [
           {
-            "expr": "go_goroutines{job=~\".*gluetarr.*\"}",
+            "expr": "go_goroutines{job=~\".*forwardarr.*\"}",
             "legendFormat": "Goroutines",
             "refId": "A"
           }
@@ -271,7 +271,7 @@
         "gridPos": {"h": 4, "w": 12, "x": 12, "y": 16},
         "targets": [
           {
-            "expr": "rate(process_cpu_seconds_total{job=~\".*gluetarr.*\"}[1m])",
+            "expr": "rate(process_cpu_seconds_total{job=~\".*forwardarr.*\"}[1m])",
             "legendFormat": "CPU Usage",
             "refId": "A"
           }

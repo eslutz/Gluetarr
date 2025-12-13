@@ -7,7 +7,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/eslutz/gluetarr/internal/qbit"
+	"github.com/eslutz/forwardarr/internal/qbit"
 )
 
 type Server struct {

@@ -1,4 +1,4 @@
-# Gluetarr - Pull Request Template
+# Forwardarr - Pull Request Template
 
 ## Description
 

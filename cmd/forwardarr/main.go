@@ -8,18 +8,18 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/eslutz/gluetarr/internal/config"
-	"github.com/eslutz/gluetarr/internal/qbit"
-	"github.com/eslutz/gluetarr/internal/server"
-	"github.com/eslutz/gluetarr/internal/sync"
-	_ "github.com/eslutz/gluetarr/pkg/version"
+	"github.com/eslutz/forwardarr/internal/config"
+	"github.com/eslutz/forwardarr/internal/qbit"
+	"github.com/eslutz/forwardarr/internal/server"
+	"github.com/eslutz/forwardarr/internal/sync"
+	_ "github.com/eslutz/forwardarr/pkg/version"
 )
 
 func main() {
 	cfg := config.Load()
 	setupLogging(cfg.LogLevel)
 
-	slog.Info("starting gluetarr",
+	slog.Info("starting forwardarr",
 		"gluetun_port_file", cfg.GluetunPortFile,
 		"qbit_addr", cfg.QbitAddr,
 		"sync_interval", cfg.SyncInterval,

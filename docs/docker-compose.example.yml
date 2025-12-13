@@ -1,4 +1,4 @@
-# Example Docker Compose configuration for Gluetarr
+# Example Docker Compose configuration for Forwardarr
 # Copy this file to docker-compose.yml and customize as needed
 
 services:
@@ -30,17 +30,17 @@ services:
       - ./qbittorrent:/config
       - ./downloads:/downloads
 
-  gluetarr:
-    image: ghcr.io/eslutz/gluetarr:latest
-    container_name: gluetarr
+  forwardarr:
+    image: ghcr.io/eslutz/forwardarr:latest
+    container_name: forwardarr
     depends_on:
       - gluetun
       - qbittorrent
     environment:
       - GLUETUN_PORT_FILE=/tmp/gluetun/forwarded_port
-      - QBIT_ADDR=http://gluetun:8080
-      - QBIT_USER=admin
-      - QBIT_PASS=adminadmin
+      - TORRENT_CLIENT_URL=http://gluetun:8080
+      - TORRENT_CLIENT_USER=admin
+      - TORRENT_CLIENT_PASSWORD=adminadmin
       - SYNC_INTERVAL=60
       - LOG_LEVEL=info
     volumes:

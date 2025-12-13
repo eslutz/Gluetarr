@@ -10,22 +10,22 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build \
-    -ldflags="-w -s -X github.com/eslutz/gluetarr/pkg/version.Version=${VERSION} -X github.com/eslutz/gluetarr/pkg/version.Commit=${COMMIT} -X github.com/eslutz/gluetarr/pkg/version.Date=${DATE}" \
-    -o gluetarr ./cmd/gluetarr
+    -ldflags="-w -s -X github.com/eslutz/forwardarr/pkg/version.Version=${VERSION} -X github.com/eslutz/forwardarr/pkg/version.Commit=${COMMIT} -X github.com/eslutz/forwardarr/pkg/version.Date=${DATE}" \
+    -o forwardarr ./cmd/forwardarr
 
 # Runtime Stage
 FROM alpine:3.23
 WORKDIR /app
 RUN apk add --no-cache ca-certificates tzdata
 # Create non-root user
-RUN addgroup -g 1000 gluetarr && adduser -u 1000 -G gluetarr -D gluetarr
+RUN addgroup -g 1000 forwardarr && adduser -u 1000 -G forwardarr -D forwardarr
 
-COPY --from=builder /app/gluetarr /app/gluetarr
+COPY --from=builder /app/forwardarr /app/forwardarr
 
-USER gluetarr
+USER forwardarr
 EXPOSE 9090
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:9090/health || exit 1
 
-ENTRYPOINT ["/app/gluetarr"]
+ENTRYPOINT ["/app/forwardarr"]
