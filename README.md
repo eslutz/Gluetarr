@@ -144,8 +144,15 @@ docker build -t forwardarr .
 # Install dependencies
 go mod download
 
-# Run tests
-go test -v ./...
+# Run tests with race detector and coverage profile (matches CI)
+go test -race -coverprofile=coverage.out -covermode=atomic ./...
+
+# View overall coverage
+go tool cover -func=coverage.out | tail -1
+
+# View filtered coverage (CI excludes the entrypoint file)
+grep -v "cmd/forwardarr/main.go" coverage.out > coverage-filtered.out
+go tool cover -func=coverage-filtered.out | tail -1
 
 # Run linter
 golangci-lint run
@@ -157,6 +164,8 @@ export TORRENT_CLIENT_USER=admin
 export TORRENT_CLIENT_PASSWORD=adminadmin
 go run ./cmd/forwardarr
 ```
+
+CI enforces ≥60% coverage on the filtered profile (excluding the `cmd/forwardarr/main.go` entrypoint).
 
 ## Troubleshooting
 
