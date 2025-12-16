@@ -48,7 +48,7 @@ All configuration is done via environment variables. An example configuration fi
 | `TORRENT_CLIENT_URL` | `http://localhost:8080` | Torrent client WebUI address |
 | `TORRENT_CLIENT_USER` | `admin` | Torrent client username |
 | `TORRENT_CLIENT_PASSWORD` | `adminadmin` | Torrent client password |
-| `SYNC_INTERVAL` | `60` | Fallback polling interval (seconds) |
+| `SYNC_INTERVAL` | `300` | Fallback polling interval (seconds). Set to `0` to disable periodic sync. |
 | `METRICS_PORT` | `9090` | HTTP server port for metrics/health |
 | `LOG_LEVEL` | `info` | Logging level (debug, info, warn, error) |
 
@@ -73,7 +73,7 @@ All configuration is done via environment variables. An example configuration fi
 2. Gluetun writes the forwarded port to a file
 3. Forwardarr watches this file for changes using fsnotify
 4. When the port changes, Forwardarr updates qBittorrent's listening port via API
-5. A fallback ticker ensures sync even if file events are missed
+5. A fallback ticker ensures sync even if file events are missed (configurable, can be disabled)
 
 ## HTTP Endpoints
 

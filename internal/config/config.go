@@ -22,7 +22,7 @@ func Load() *Config {
 		QbitAddr:        getEnv("TORRENT_CLIENT_URL", "http://localhost:8080"),
 		QbitUser:        getEnv("TORRENT_CLIENT_USER", "admin"),
 		QbitPass:        getEnv("TORRENT_CLIENT_PASSWORD", "adminadmin"),
-		SyncInterval:    getDurationEnv("SYNC_INTERVAL", 60*time.Second),
+		SyncInterval:    getDurationEnv("SYNC_INTERVAL", 5*time.Minute),
 		MetricsPort:     getEnv("METRICS_PORT", "9090"),
 		LogLevel:        getEnv("LOG_LEVEL", "info"),
 	}

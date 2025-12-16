@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strconv"
 	"testing"
 
 	"github.com/eslutz/forwardarr/internal/qbit"
@@ -70,10 +71,17 @@ func newTestQbitServer(t *testing.T, initialPort int, getStatus, setStatus int) 
 				return
 			}
 
-			var data map[string]interface{}
-			_ = json.NewDecoder(r.Body).Decode(&data)
-			if p, ok := data["listen_port"].(float64); ok {
-				port = int(p)
+			err := r.ParseForm()
+			if err != nil {
+				t.Errorf("ParseForm error: %v", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			portStr := r.Form.Get("listen_port")
+			if portStr != "" {
+				if p, err := strconv.Atoi(portStr); err == nil {
+					port = p
+				}
 			}
 			w.WriteHeader(http.StatusOK)
 		default:

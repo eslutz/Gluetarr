@@ -1,7 +1,6 @@
 package qbit
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,6 +8,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -101,22 +101,10 @@ func (c *Client) GetPort() (int, error) {
 }
 
 func (c *Client) SetPort(port int) error {
-	data := map[string]interface{}{
-		"listen_port": port,
-	}
+	data := url.Values{}
+	data.Set("listen_port", strconv.Itoa(port))
 
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		return fmt.Errorf("failed to marshal JSON: %w", err)
-	}
-
-	req, err := http.NewRequest("POST", c.baseURL+"/api/v2/app/setPreferences", bytes.NewBuffer(jsonData))
-	if err != nil {
-		return fmt.Errorf("failed to create request: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := c.client.Do(req)
+	resp, err := c.client.PostForm(c.baseURL+"/api/v2/app/setPreferences", data)
 	if err != nil {
 		return fmt.Errorf("failed to set preferences: %w", err)
 	}

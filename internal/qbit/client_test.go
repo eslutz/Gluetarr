@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 )
 
@@ -74,7 +75,7 @@ func TestLogin_Failure(t *testing.T) {
 			Jar: jar,
 		},
 	}
-	
+
 	err := client.Login()
 	if err == nil {
 		t.Error("Login() error = nil, want error")
@@ -157,10 +158,15 @@ func TestSetPort_Success(t *testing.T) {
 			return
 		}
 		if r.URL.Path == "/api/v2/app/setPreferences" {
-			var data map[string]interface{}
-			_ = json.NewDecoder(r.Body).Decode(&data)
-			if port, ok := data["listen_port"].(float64); ok {
-				receivedPort = int(port)
+			err := r.ParseForm()
+			if err != nil {
+				t.Fatalf("ParseForm error: %v", err)
+			}
+			portStr := r.Form.Get("listen_port")
+			var err2 error
+			receivedPort, err2 = strconv.Atoi(portStr)
+			if err2 != nil {
+				t.Fatalf("Atoi error: %v", err2)
 			}
 			w.WriteHeader(http.StatusOK)
 			return

@@ -46,8 +46,13 @@ func NewWatcher(portFile string, qbitClient *qbit.Client, syncInterval time.Dura
 }
 
 func (w *Watcher) Start() error {
-	ticker := time.NewTicker(w.syncInterval)
-	defer ticker.Stop()
+	var ticker *time.Ticker
+	var tickerC <-chan time.Time
+	if w.syncInterval > 0 {
+		ticker = time.NewTicker(w.syncInterval)
+		defer ticker.Stop()
+		tickerC = ticker.C
+	}
 	defer func() {
 		if err := w.watcher.Close(); err != nil {
 			slog.Warn("failed to close watcher", "error", err)
@@ -79,7 +84,7 @@ func (w *Watcher) Start() error {
 			}
 			slog.Error("file watcher error", "error", err)
 
-		case <-ticker.C:
+		case <-tickerC:
 			slog.Debug("periodic sync triggered")
 			if err := w.syncPort(); err != nil {
 				slog.Warn("periodic sync failed", "error", err)
