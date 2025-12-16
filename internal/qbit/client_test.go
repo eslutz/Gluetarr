@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 )
 
@@ -162,11 +161,23 @@ func TestSetPort_Success(t *testing.T) {
 			if err != nil {
 				t.Fatalf("ParseForm error: %v", err)
 			}
-			portStr := r.Form.Get("listen_port")
-			var err2 error
-			receivedPort, err2 = strconv.Atoi(portStr)
-			if err2 != nil {
-				t.Fatalf("Atoi error: %v", err2)
+			// qBittorrent API expects the preferences as JSON in the 'json' form field
+			jsonStr := r.Form.Get("json")
+			if jsonStr == "" {
+				w.WriteHeader(http.StatusBadRequest)
+				_, _ = w.Write([]byte("json parameter missing"))
+				return
+			}
+			var prefs map[string]int
+			if err := json.Unmarshal([]byte(jsonStr), &prefs); err != nil {
+				t.Fatalf("json.Unmarshal error: %v", err)
+			}
+			var ok bool
+			receivedPort, ok = prefs["listen_port"]
+			if !ok {
+				w.WriteHeader(http.StatusBadRequest)
+				_, _ = w.Write([]byte("listen_port parameter missing"))
+				return
 			}
 			w.WriteHeader(http.StatusOK)
 			return

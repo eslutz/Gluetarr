@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"strconv"
 	"testing"
 
 	"github.com/eslutz/forwardarr/internal/qbit"
@@ -36,9 +35,11 @@ func TestReadPortFromFile_Success(t *testing.T) {
 func newTestQbitServer(t *testing.T, initialPort int, getStatus, setStatus int) (*httptest.Server, *int, *int, *int) {
 	t.Helper()
 
-	port := initialPort
-	setPortCalls := 0
-	getPortCalls := 0
+	// Use heap-allocated variables so pointers remain valid
+	port := new(int)
+	*port = initialPort
+	setPortCalls := new(int)
+	getPortCalls := new(int)
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
@@ -46,7 +47,7 @@ func newTestQbitServer(t *testing.T, initialPort int, getStatus, setStatus int) 
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("Ok."))
 		case "/api/v2/app/preferences":
-			getPortCalls++
+			*getPortCalls++
 			status := http.StatusOK
 			if getStatus != 0 {
 				status = getStatus
@@ -58,9 +59,9 @@ func newTestQbitServer(t *testing.T, initialPort int, getStatus, setStatus int) 
 			}
 
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(qbit.Preferences{ListenPort: port})
+			_ = json.NewEncoder(w).Encode(qbit.Preferences{ListenPort: *port})
 		case "/api/v2/app/setPreferences":
-			setPortCalls++
+			*setPortCalls++
 			status := http.StatusOK
 			if setStatus != 0 {
 				status = setStatus
@@ -77,10 +78,15 @@ func newTestQbitServer(t *testing.T, initialPort int, getStatus, setStatus int) 
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			portStr := r.Form.Get("listen_port")
-			if portStr != "" {
-				if p, err := strconv.Atoi(portStr); err == nil {
-					port = p
+
+			// qBittorrent API expects the preferences as JSON in the 'json' form field
+			jsonStr := r.Form.Get("json")
+			if jsonStr != "" {
+				var prefs map[string]int
+				if err := json.Unmarshal([]byte(jsonStr), &prefs); err != nil {
+					t.Errorf("json.Unmarshal error: %v", err)
+				} else if newPort, ok := prefs["listen_port"]; ok {
+					*port = newPort
 				}
 			}
 			w.WriteHeader(http.StatusOK)
@@ -89,7 +95,7 @@ func newTestQbitServer(t *testing.T, initialPort int, getStatus, setStatus int) 
 		}
 	}))
 
-	return server, &port, &getPortCalls, &setPortCalls
+	return server, port, getPortCalls, setPortCalls
 }
 
 func TestWatcherSyncPortUpdatesPort(t *testing.T) {
