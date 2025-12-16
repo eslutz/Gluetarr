@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
-	"strconv"
 	"strings"
 )
 
@@ -101,8 +100,17 @@ func (c *Client) GetPort() (int, error) {
 }
 
 func (c *Client) SetPort(port int) error {
+	prefsJSON := map[string]int{
+		"listen_port": port,
+	}
+
+	jsonBytes, err := json.Marshal(prefsJSON)
+	if err != nil {
+		return fmt.Errorf("failed to marshal preferences: %w", err)
+	}
+
 	data := url.Values{}
-	data.Set("listen_port", strconv.Itoa(port))
+	data.Set("json", string(jsonBytes))
 
 	resp, err := c.client.PostForm(c.baseURL+"/api/v2/app/setPreferences", data)
 	if err != nil {
