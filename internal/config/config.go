@@ -14,9 +14,13 @@ type Config struct {
 	SyncInterval    time.Duration
 	MetricsPort     string
 	LogLevel        string
+	WebhookURL      string
+	WebhookEnabled  bool
+	WebhookTimeout  time.Duration
 }
 
 func Load() *Config {
+	webhookURL := getEnv("WEBHOOK_URL", "")
 	return &Config{
 		GluetunPortFile: getEnv("GLUETUN_PORT_FILE", "/tmp/gluetun/forwarded_port"),
 		QbitAddr:        getEnv("TORRENT_CLIENT_URL", "http://localhost:8080"),
@@ -25,6 +29,9 @@ func Load() *Config {
 		SyncInterval:    getDurationEnv("SYNC_INTERVAL", 5*time.Minute),
 		MetricsPort:     getEnv("METRICS_PORT", "9090"),
 		LogLevel:        getEnv("LOG_LEVEL", "info"),
+		WebhookURL:      webhookURL,
+		WebhookEnabled:  webhookURL != "",
+		WebhookTimeout:  getDurationEnv("WEBHOOK_TIMEOUT", 10*time.Second),
 	}
 }
 

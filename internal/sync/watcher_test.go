@@ -113,7 +113,7 @@ func TestWatcherSyncPortUpdatesPort(t *testing.T) {
 		t.Fatalf("NewClient() error = %v", err)
 	}
 
-	watcher := &Watcher{portFile: portFile, qbitClient: client}
+	watcher := &Watcher{portFile: portFile, qbitClient: client, webhookClient: nil}
 	if err := watcher.syncPort(); err != nil {
 		t.Fatalf("syncPort() error = %v", err)
 	}
@@ -144,7 +144,7 @@ func TestWatcherSyncPortAlreadyInSync(t *testing.T) {
 		t.Fatalf("NewClient() error = %v", err)
 	}
 
-	watcher := &Watcher{portFile: portFile, qbitClient: client}
+	watcher := &Watcher{portFile: portFile, qbitClient: client, webhookClient: nil}
 	if err := watcher.syncPort(); err != nil {
 		t.Fatalf("syncPort() error = %v", err)
 	}
@@ -172,7 +172,7 @@ func TestWatcherSyncPortGetPortError(t *testing.T) {
 		t.Fatalf("NewClient() error = %v", err)
 	}
 
-	watcher := &Watcher{portFile: portFile, qbitClient: client}
+	watcher := &Watcher{portFile: portFile, qbitClient: client, webhookClient: nil}
 	if err := watcher.syncPort(); err == nil {
 		t.Fatal("syncPort() error = nil, want error")
 	}
@@ -196,7 +196,7 @@ func TestWatcherSyncPortSetPortError(t *testing.T) {
 		t.Fatalf("NewClient() error = %v", err)
 	}
 
-	watcher := &Watcher{portFile: portFile, qbitClient: client}
+	watcher := &Watcher{portFile: portFile, qbitClient: client, webhookClient: nil}
 	if err := watcher.syncPort(); err == nil {
 		t.Fatal("syncPort() error = nil, want error")
 	}

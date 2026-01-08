@@ -11,6 +11,7 @@ A lightweight, production-ready Go application that automatically synchronizes p
 ## Features
 
 - **Automatic Port Synchronization**: Monitors Gluetun's forwarded port file and updates qBittorrent instantly
+- **Webhook Notifications**: Send HTTP POST notifications when port changes occur for external integrations
 - **Full Observability**: Prometheus metrics for monitoring and alerting
 - **Health & Readiness**: Kubernetes-compatible health check endpoints
 - **Efficient File Watching**: Uses fsnotify for real-time file system events
@@ -51,6 +52,8 @@ All configuration is done via environment variables. An example configuration fi
 | `SYNC_INTERVAL` | `300` | Fallback polling interval (seconds). Set to `0` to disable periodic sync. |
 | `METRICS_PORT` | `9090` | HTTP server port for metrics/health |
 | `LOG_LEVEL` | `info` | Logging level (debug, info, warn, error) |
+| `WEBHOOK_URL` | `` | Webhook URL for port change notifications. Leave empty to disable webhooks. |
+| `WEBHOOK_TIMEOUT` | `10` | Webhook request timeout in seconds |
 
 ## Architecture
 
@@ -74,6 +77,41 @@ All configuration is done via environment variables. An example configuration fi
 3. Forwardarr watches this file for changes using fsnotify
 4. When the port changes, Forwardarr updates qBittorrent's listening port via API
 5. A fallback ticker ensures sync even if file events are missed (configurable, can be disabled)
+
+## Webhooks
+
+Forwardarr can send HTTP POST notifications when port changes occur. This is useful for integrating with other services or triggering automation workflows.
+
+### Webhook Configuration
+
+Set the `WEBHOOK_URL` environment variable to enable webhook notifications:
+
+```bash
+WEBHOOK_URL=http://your-server.com/webhook
+WEBHOOK_TIMEOUT=10  # Optional, defaults to 10 seconds
+```
+
+### Webhook Payload
+
+When a port change is detected, Forwardarr sends a JSON payload:
+
+```json
+{
+  "event": "port_changed",
+  "timestamp": "2026-01-08T12:00:00Z",
+  "old_port": 8080,
+  "new_port": 9090,
+  "message": "Port changed from 8080 to 9090"
+}
+```
+
+### Webhook Security
+
+- Webhooks are sent with `Content-Type: application/json`
+- User-Agent is set to `Forwardarr-Webhook/1.0`
+- Consider using HTTPS URLs for webhook endpoints
+- Implement signature verification on your webhook receiver if needed
+- Webhook failures are logged but do not prevent port updates
 
 ## HTTP Endpoints
 
