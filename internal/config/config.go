@@ -12,6 +12,8 @@ type Config struct {
 	QbitAddr          string
 	QbitUser          string
 	QbitPass          string
+	StartupRetryDelay time.Duration
+	StartupTimeout    time.Duration
 	SyncInterval      time.Duration
 	MetricsPort       string
 	LogLevel          string
@@ -26,18 +28,20 @@ func Load() *Config {
 	webhookURL := getEnv("WEBHOOK_URL", "")
 	webhookEvents := getEnv("WEBHOOK_EVENTS", "port_changed")
 	return &Config{
-		GluetunPortFile: getEnv("GLUETUN_PORT_FILE", "/tmp/gluetun/forwarded_port"),
-		QbitAddr:        getEnv("TORRENT_CLIENT_URL", "http://localhost:8080"),
-		QbitUser:        getEnv("TORRENT_CLIENT_USER", "admin"),
-		QbitPass:        getEnv("TORRENT_CLIENT_PASSWORD", "adminadmin"),
-		SyncInterval:    getDurationEnv("SYNC_INTERVAL", 5*time.Minute),
-		MetricsPort:     getEnv("METRICS_PORT", "9090"),
-		LogLevel:        getEnv("LOG_LEVEL", "info"),
-		WebhookURL:      webhookURL,
-		WebhookEnabled:  webhookURL != "",
-		WebhookTimeout:  getDurationEnv("WEBHOOK_TIMEOUT", 10*time.Second),
-		WebhookTemplate: getEnv("WEBHOOK_TEMPLATE", "json"),
-		WebhookEvents:   parseEvents(webhookEvents),
+		GluetunPortFile:   getEnv("GLUETUN_PORT_FILE", "/tmp/gluetun/forwarded_port"),
+		QbitAddr:          getEnv("TORRENT_CLIENT_URL", "http://localhost:8080"),
+		QbitUser:          getEnv("TORRENT_CLIENT_USER", "admin"),
+		QbitPass:          getEnv("TORRENT_CLIENT_PASSWORD", "adminadmin"),
+		StartupRetryDelay: getDurationEnv("STARTUP_RETRY_DELAY", 5*time.Second),
+		StartupTimeout:    getDurationEnv("STARTUP_TIMEOUT", 120*time.Second),
+		SyncInterval:      getDurationEnv("SYNC_INTERVAL", 5*time.Minute),
+		MetricsPort:       getEnv("METRICS_PORT", "9090"),
+		LogLevel:          getEnv("LOG_LEVEL", "info"),
+		WebhookURL:        webhookURL,
+		WebhookEnabled:    webhookURL != "",
+		WebhookTimeout:    getDurationEnv("WEBHOOK_TIMEOUT", 10*time.Second),
+		WebhookTemplate:   getEnv("WEBHOOK_TEMPLATE", "json"),
+		WebhookEvents:     parseEvents(webhookEvents),
 	}
 }
 

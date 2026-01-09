@@ -6,6 +6,7 @@ import (
 	"net/http/cookiejar"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func TestNewClient_Success(t *testing.T) {
@@ -148,6 +149,45 @@ func TestGetPort_Reauthentication(t *testing.T) {
 	}
 }
 
+func TestGetPort_RetryOnServerError(t *testing.T) {
+	origDelay := requestRetryDelay
+	requestRetryDelay = 10 * time.Millisecond
+	defer func() { requestRetryDelay = origDelay }()
+	callCount := 0
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/v2/auth/login" {
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("Ok."))
+			return
+		}
+		if r.URL.Path == "/api/v2/app/preferences" {
+			callCount++
+			if callCount == 1 {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			prefs := Preferences{ListenPort: 23456}
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(prefs)
+			return
+		}
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer server.Close()
+
+	client, _ := NewClient(server.URL, "admin", "admin")
+	port, err := client.GetPort()
+	if err != nil {
+		t.Fatalf("GetPort() error = %v, want nil", err)
+	}
+	if port != 23456 {
+		t.Errorf("GetPort() = %d, want 23456", port)
+	}
+	if callCount != 2 {
+		t.Errorf("GetPort() call count = %d, want 2", callCount)
+	}
+}
+
 func TestSetPort_Success(t *testing.T) {
 	receivedPort := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -228,6 +268,41 @@ func TestSetPort_Reauthentication(t *testing.T) {
 	}
 }
 
+func TestSetPort_RetryOnServerError(t *testing.T) {
+	origDelay := requestRetryDelay
+	requestRetryDelay = 10 * time.Millisecond
+	defer func() { requestRetryDelay = origDelay }()
+
+	callCount := 0
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/v2/auth/login" {
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("Ok."))
+			return
+		}
+		if r.URL.Path == "/api/v2/app/setPreferences" {
+			callCount++
+			if callCount == 1 {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer server.Close()
+
+	client, _ := NewClient(server.URL, "admin", "admin")
+	err := client.SetPort(7777)
+	if err != nil {
+		t.Fatalf("SetPort() error = %v, want nil", err)
+	}
+	if callCount != 2 {
+		t.Errorf("SetPort() call count = %d, want 2", callCount)
+	}
+}
+
 func TestPing_Success(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/api/v2/auth/login" {
@@ -274,6 +349,7 @@ func TestPing_Failure(t *testing.T) {
 }
 
 func TestPing_Reauthentication(t *testing.T) {
+	versionCalls := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/api/v2/auth/login" {
 			w.WriteHeader(http.StatusOK)
@@ -281,7 +357,34 @@ func TestPing_Reauthentication(t *testing.T) {
 			return
 		}
 		if r.URL.Path == "/api/v2/app/version" {
-			// Return 403 to trigger re-auth
+			versionCalls++
+			if versionCalls == 1 {
+				w.WriteHeader(http.StatusForbidden)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("v4.5.0"))
+			return
+		}
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer server.Close()
+
+	client, _ := NewClient(server.URL, "admin", "admin")
+	err := client.Ping()
+	if err != nil {
+		t.Errorf("Ping() error = %v, want nil", err)
+	}
+}
+
+func TestPing_ReauthenticationFailure(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/v2/auth/login" {
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("Ok."))
+			return
+		}
+		if r.URL.Path == "/api/v2/app/version" {
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
@@ -291,9 +394,7 @@ func TestPing_Reauthentication(t *testing.T) {
 
 	client, _ := NewClient(server.URL, "admin", "admin")
 	err := client.Ping()
-	// Ping only calls Login() on 403 but doesn't retry the request
-	// So it should return nil (successful re-authentication)
-	if err != nil {
-		t.Errorf("Ping() error = %v, want nil", err)
+	if err == nil {
+		t.Error("Ping() error = nil, want error when repeated 403")
 	}
 }

@@ -206,8 +206,8 @@ func TestWatcherSyncPortSetPortError(t *testing.T) {
 	if *port != 4000 {
 		t.Fatalf("qBittorrent port changed = %d, want 4000", *port)
 	}
-	if *setPortCalls != 1 {
-		t.Fatalf("SetPreferences call count = %d, want 1", *setPortCalls)
+	if *setPortCalls != 3 {
+		t.Fatalf("SetPreferences call count = %d, want 3", *setPortCalls)
 	}
 }
 

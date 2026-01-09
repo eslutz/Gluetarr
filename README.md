@@ -54,6 +54,8 @@ Forwardarr is configured via environment variables. For a complete, ready-to-use
 | `SYNC_INTERVAL` | `300` | Polling interval in seconds (0 to disable) |
 | `METRICS_PORT` | `9090` | HTTP server port for health/metrics |
 | `LOG_LEVEL` | `info` | Log level: `debug`, `info`, `warn`, `error` |
+| `STARTUP_RETRY_DELAY` | `5` | Base seconds between startup attempts (exponential backoff; attempts derived from timeout) |
+| `STARTUP_TIMEOUT` | `120` | Overall startup deadline in seconds before exiting |
 
 ### Webhook Notifications (Optional)
 

@@ -43,6 +43,8 @@ services:
       - TORRENT_CLIENT_PASSWORD=adminadmin
       - SYNC_INTERVAL=60
       - LOG_LEVEL=info
+      - STARTUP_RETRY_DELAY=5
+      - STARTUP_TIMEOUT=120
     volumes:
       - gluetun-data:/tmp/gluetun:ro
     ports:
