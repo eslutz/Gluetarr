@@ -102,6 +102,11 @@ func (w *Watcher) syncPort() error {
 		return fmt.Errorf("failed to read Gluetun port: %w", err)
 	}
 
+	// If port is 0, it means we should skip this sync (invalid/empty port file)
+	if gluetunPort == 0 {
+		return nil
+	}
+
 	qbitPort, err := w.qbitClient.GetPort()
 	if err != nil {
 		return fmt.Errorf("failed to get qBittorrent port: %w", err)
@@ -141,13 +146,22 @@ func (w *Watcher) readPortFromFile() (int, error) {
 	}
 
 	portStr := strings.TrimSpace(string(content))
+
+	// Handle empty file gracefully (common during Gluetun restart)
+	if portStr == "" {
+		slog.Warn("port file is empty, skipping sync (Gluetun may be restarting)")
+		return 0, nil
+	}
+
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
-		return 0, fmt.Errorf("invalid port value: %s", portStr)
+		slog.Warn("invalid port value in file, skipping sync", "value", portStr, "error", err)
+		return 0, nil
 	}
 
 	if port < 1 || port > 65535 {
-		return 0, fmt.Errorf("port out of valid range: %d", port)
+		slog.Warn("port out of valid range, skipping sync", "port", port)
+		return 0, nil
 	}
 
 	return port, nil

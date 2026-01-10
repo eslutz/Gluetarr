@@ -250,9 +250,32 @@ func TestReadPortFromFile_InvalidPort(t *testing.T) {
 	}
 
 	w := &Watcher{portFile: portFile}
-	_, err = w.readPortFromFile()
-	if err == nil {
-		t.Error("readPortFromFile() error = nil, want error")
+	port, err := w.readPortFromFile()
+	if err != nil {
+		t.Errorf("readPortFromFile() error = %v, want nil (graceful handling)", err)
+	}
+	if port != 0 {
+		t.Errorf("readPortFromFile() = %d, want 0", port)
+	}
+}
+
+func TestReadPortFromFile_EmptyFile(t *testing.T) {
+	tmpDir := t.TempDir()
+	portFile := filepath.Join(tmpDir, "forwarded_port")
+
+	// Write empty content (common during Gluetun restart)
+	err := os.WriteFile(portFile, []byte(""), 0644)
+	if err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	w := &Watcher{portFile: portFile}
+	port, err := w.readPortFromFile()
+	if err != nil {
+		t.Errorf("readPortFromFile() error = %v, want nil (graceful handling)", err)
+	}
+	if port != 0 {
+		t.Errorf("readPortFromFile() = %d, want 0", port)
 	}
 }
 
@@ -278,9 +301,12 @@ func TestReadPortFromFile_PortOutOfRange(t *testing.T) {
 			}
 
 			w := &Watcher{portFile: portFile}
-			_, err = w.readPortFromFile()
-			if err == nil {
-				t.Errorf("readPortFromFile() with port %s: error = nil, want error", tt.port)
+			port, err := w.readPortFromFile()
+			if err != nil {
+				t.Errorf("readPortFromFile() with port %s: error = %v, want nil (graceful handling)", tt.port, err)
+			}
+			if port != 0 {
+				t.Errorf("readPortFromFile() with port %s: port = %d, want 0", tt.port, port)
 			}
 		})
 	}
@@ -376,5 +402,54 @@ func TestWatcherSyncPortWithWebhook(t *testing.T) {
 	}
 	if receivedNewPort != 7070 {
 		t.Errorf("webhook new_port = %d, want 7070", receivedNewPort)
+	}
+}
+
+func TestWatcherSyncPortSkipsInvalidPort(t *testing.T) {
+	tmpDir := t.TempDir()
+	portFile := filepath.Join(tmpDir, "forwarded_port")
+
+	tests := []struct {
+		name    string
+		content string
+	}{
+		{"empty file", ""},
+		{"invalid content", "not-a-number"},
+		{"port too low", "0"},
+		{"port too high", "65536"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := os.WriteFile(portFile, []byte(tt.content), 0644); err != nil {
+				t.Fatalf("failed to write port file: %v", err)
+			}
+
+			server, port, getPortCalls, setPortCalls := newTestQbitServer(t, 8080, 0, 0)
+			defer server.Close()
+
+			client, err := qbit.NewClient(server.URL, "user", "pass")
+			if err != nil {
+				t.Fatalf("NewClient() error = %v", err)
+			}
+
+			watcher := &Watcher{portFile: portFile, qbitClient: client, webhookClient: nil}
+			if err := watcher.syncPort(); err != nil {
+				t.Fatalf("syncPort() error = %v, want nil (graceful handling)", err)
+			}
+
+			// qBittorrent port should remain unchanged
+			if *port != 8080 {
+				t.Errorf("qBittorrent port = %d, want 8080 (unchanged)", *port)
+			}
+			// GetPort should not be called if port is invalid
+			if *getPortCalls != 0 {
+				t.Errorf("GetPort call count = %d, want 0", *getPortCalls)
+			}
+			// SetPort should not be called if port is invalid
+			if *setPortCalls != 0 {
+				t.Errorf("SetPreferences call count = %d, want 0", *setPortCalls)
+			}
+		})
 	}
 }
